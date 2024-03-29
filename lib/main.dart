@@ -6,6 +6,8 @@ import 'package:store_room2/pages/search_page/search_page.dart';
 import 'package:store_room2/pages/store_page/store_page.dart';
 import 'package:store_room2/pages/profile_page.dart';
 
+// todays subjects: 
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(BottomBar());
