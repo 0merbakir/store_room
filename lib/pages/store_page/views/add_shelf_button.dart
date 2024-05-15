@@ -4,13 +4,14 @@ import 'dart:async';
 class AddShelfButton extends StatefulWidget {
   final VoidCallback onPressed;
 
-  const AddShelfButton({super.key, required this.onPressed});
+  const AddShelfButton({Key? key, required this.onPressed}) : super(key: key);
 
   @override
   AddShelfButtonState createState() => AddShelfButtonState();
 }
 
-class AddShelfButtonState extends State<AddShelfButton> with TickerProviderStateMixin {
+class AddShelfButtonState extends State<AddShelfButton>
+    with TickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
@@ -18,8 +19,14 @@ class AddShelfButtonState extends State<AddShelfButton> with TickerProviderState
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 750),
     );
+    _controller.forward();
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        _controller.reverse();
+      }
+    });
   }
 
   @override
@@ -29,43 +36,58 @@ class AddShelfButtonState extends State<AddShelfButton> with TickerProviderState
   }
 
   void _onPressed() {
-    _controller.forward(from: 0.0);
-    Timer(const Duration(milliseconds: 500), widget.onPressed);
+    _controller.stop();
+    widget.onPressed();
   }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 80,
-      height: 80,
+      width: 80, // Adjust the width as needed
+      height: 80, // Adjust the height as needed
       child: GestureDetector(
         onTap: _onPressed,
-        child: RotationTransition(
-          turns: _controller,
-          child: Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: const LinearGradient(
-                colors: [
-                  Color.fromARGB(183, 4, 40, 131),
-                  Color.fromARGB(179, 5, 80, 193),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.blue.withOpacity(0.5),
-                  spreadRadius: 3,
-                  blurRadius: 7,
-                  offset: const Offset(0, 3),
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: 1.0 +
+                  _controller.value *
+                      0.1, // Adjust the scale factor for the pop-up effect
+              child: child,
+            );
+          },
+          child: RotationTransition(
+            turns: _controller,
+            child: Container(
+              width: 60,
+              height: 60,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [
+                    Color.fromARGB(117, 90, 89, 89), // Top color with opacity
+                    Color.fromARGB(
+                        255, 11, 11, 125), // Bottom color // Bottom color
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-              ],
-            ),
-            child: const Icon(
-              Icons.add_chart_rounded,
-              size: 40,
-              color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Color.fromARGB(35, 4, 21, 169),
+                    spreadRadius: 3,
+                    blurRadius: 7,
+                    offset: Offset(3,
+                        3), // Adjust the offset to control the shadow position
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.format_shapes,
+                size: 40,
+                color: Colors.white,
+              ),
             ),
           ),
         ),

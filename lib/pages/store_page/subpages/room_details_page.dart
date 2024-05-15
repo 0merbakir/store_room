@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:store_room2/models/product.dart'; // Import the Product class
-import 'package:store_room2/pages/store_page/subpages/add_product_page.dart';
-import 'package:store_room2/pages/store_page/views/product_list_item.dart'; // Import the ProductListItem widget
+import 'package:store_room/models/product.dart'; // Import the Product class
+import 'package:store_room/models/store_room.dart';
+import 'package:store_room/pages/store_page/subpages/add_product_page.dart';
+import 'package:store_room/pages/store_page/views/product_list_item.dart';
+import 'package:store_room/services/database_helper_product.dart';
+import 'package:store_room/services/database_helper_product_storeroom.dart'; // Import the ProductListItem widget
 
 class RoomDetailsPage extends StatefulWidget {
-  const RoomDetailsPage({super.key});
+  RoomDetailsPage({super.key, required this.storeRoom});
+
+  final StoreRoom storeRoom;
 
   @override
   // ignore: library_private_types_in_public_api
@@ -12,37 +17,29 @@ class RoomDetailsPage extends StatefulWidget {
 }
 
 class _RoomDetailsPageState extends State<RoomDetailsPage> {
-  // List of items (dummy Product objects)
-  List<Product> products = [
-    const Product(
-      id: 1,
-      roomId: 'room_id_1',
-      title: 'Product 1',
-      quantity: 5,
-      price: 10.99,
-      category: 'Category 1',
-      code: 'P001',
-      space: 'Space 1',
-      location: 'Location 1',
-      imageUrl: 'https://example.com/image1.jpg',
-    ),
-    const Product(
-      id: 2,
-      roomId: 'room_id_2',
-      title: 'Product 2',
-      quantity: 10,
-      price: 19.99,
-      category: 'Category 2',
-      code: 'P002',
-      space: 'Space 2',
-      location: 'Location 2',
-      imageUrl: 'https://example.com/image2.jpg',
-    ),
-    // Add more dummy products as needed
-  ];
+  List<Product> storeProducts = [];
+  List<Product> filteredProducts = [];
+
+  @override
+  void initState() {
+    super.initState();
+    initializeProducts();
+  }
+
+  void initializeProducts() async {
+    storeProducts = await fetchStoreProducts();
+    filteredProducts = List.from(storeProducts);
+    setState(() {});
+  }
+
+  Future<List<Product>> fetchStoreProducts() async {
+    List<String> productIds =
+        await ProductStoreroomDatabaseHelper.getProductIdsByStoreroomId(
+            widget.storeRoom.id);
+    return await ProductDatabaseHelper.getProductsByIds(productIds);
+  }
 
   // Filtered items based on search query
-  List<Product> filteredProducts = [];
 
   // Search query string
   String searchQuery = '';
@@ -52,9 +49,9 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
     setState(
       () {
         if (query.isEmpty) {
-          filteredProducts = [...products];
+          filteredProducts = [...storeProducts];
         } else {
-          filteredProducts = products
+          filteredProducts = storeProducts
               .where((product) => product.title.toLowerCase().contains(
                     query.toLowerCase(),
                   ))
@@ -62,12 +59,6 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
         }
       },
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    filteredProducts = [...products];
   }
 
   @override
@@ -87,12 +78,17 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'addProductFromDetails',
         onPressed: () {
           // Implement add new product functionality
           // You can show a dialog or navigate to another page to add a new product
 
-          Navigator.push(
-              context, MaterialPageRoute(builder: (ctx) => AddProductPage()));
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (ctx) => AddProductPage(
+                        storeRoom: widget.storeRoom,
+                      )));
         },
         child: const Icon(Icons.add),
       ),
@@ -123,7 +119,8 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
                     // Implement delete functionality when the item is swiped
                     onDismissed: () {
                       setState(() {
-                        filteredProducts.removeAt(index);
+                        filteredProducts.removeAt(
+                            index); // call database remove products with both products and productStoreRoom
                       });
                     },
                   );

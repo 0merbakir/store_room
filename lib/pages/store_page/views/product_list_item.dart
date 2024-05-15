@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:store_room2/models/product.dart'; // Import the Product class
+import 'package:store_room/models/product.dart'; // Import the Product class
 
 class ProductListItem extends StatelessWidget {
   final Product product; // Product object
@@ -31,11 +31,12 @@ class ProductListItem extends StatelessWidget {
       ),
       direction: DismissDirection.endToStart,
       child: ListTile(
-        leading: CircleAvatar(
-          backgroundImage: NetworkImage(product.imageUrl),
+        leading: const CircleAvatar(
+          backgroundImage: null,
         ),
         title: Text(product.title),
-        subtitle: Text('Quantity: ${product.quantity}, Price: \$${product.price.toStringAsFixed(2)}'),
+        subtitle: Text('Adet: ${product.quantity}  Alış Fiyatı: ${product.buyingPrice.toStringAsFixed(2)}₺ Satış Fiyatı: ${product.sellingPrice.toStringAsFixed(2)}₺'),
+        
       ),
     );
   }

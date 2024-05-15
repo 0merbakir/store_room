@@ -17,16 +17,6 @@ class _ScanQRCodeState extends State<ScanQRCode> {
   QRViewController? controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
 
-  static bool? isCamPaused;
-
-  @override
-  void initState() {
-    isCamPaused = false;
-    super.initState();
-  }
-
-  // In order to get hot reload to work we need to pause the camera if the platform
-  // is android, or resume the camera if the platform is iOS.
   @override
   void reassemble() {
     super.reassemble();
@@ -63,23 +53,60 @@ class _ScanQRCodeState extends State<ScanQRCode> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   if (result != null)
-                    Text(
-                      'Code Format: ${truncateText(describeEnum(result!.format))}   Veri: ${truncateText(result!.code!)}',
-                      style: const TextStyle(
-                        color: Colors.white, // Set text color to white
-                        fontSize: 16, // Adjust font size as needed
-                        fontWeight:
-                            FontWeight.bold, // Apply font weight if desired
-                      ),
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            const Text(
+                              'Format:',
+                              style: TextStyle(
+                                color: Color.fromARGB(224, 255, 255, 255),
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              '  ${truncateText(describeEnum(result!.format))}',
+                              style: const TextStyle(
+                                color: Color.fromARGB(148, 255, 255, 255),
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(
+                            height: 10), // Add space between text items
+                        Row(
+                          children: [
+                            const Text(
+                              'Kod: ',
+                              style: TextStyle(
+                                color: Color.fromARGB(221, 255, 255, 255),
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              '${truncateText(result!.code!)}',
+                              style: const TextStyle(
+                                color: Color.fromARGB(179, 255, 255, 255),
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
                     )
                   else
                     const Text(
                       'Taranıyor...',
                       style: TextStyle(
-                        color: Colors.white, // Set text color to white
-                        fontSize: 16, // Adjust font size as needed
-                        fontWeight:
-                            FontWeight.bold, // Apply font weight if desired
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   const SizedBox(
@@ -90,17 +117,15 @@ class _ScanQRCodeState extends State<ScanQRCode> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       Container(
-                        margin: const EdgeInsets.all(8),
+                        margin: const EdgeInsets.all(4), // Reduce margin
                         child: ElevatedButton(
                           onPressed: () async {
                             await controller!.toggleFlash();
                             setState(() {});
                           },
                           style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.zero, // Remove padding
-
-                            backgroundColor: Colors
-                                .transparent, // Set button background color to transparent
+                            padding: const EdgeInsets.all(4), // Reduce padding
+                            backgroundColor: Colors.transparent,
                           ),
                           child: FutureBuilder(
                             future: controller != null
@@ -110,71 +135,35 @@ class _ScanQRCodeState extends State<ScanQRCode> {
                               if (snapshot.hasData && snapshot.data != null) {
                                 return Icon(
                                   Icons.flash_on,
+                                  size: 16,
                                   color: snapshot.data!
                                       ? const Color.fromARGB(255, 11, 153, 247)
                                       : Colors.white,
                                 );
                               } else {
-                                return const CircularProgressIndicator(); // Future is not complete yet or data is null
+                                return const CircularProgressIndicator();
                               }
                             },
                           ),
                         ),
                       ),
                       Container(
-                        margin: const EdgeInsets.all(8),
-                        child: ElevatedButton(
-                            onPressed: () async {
-                              await controller?.flipCamera();
-                              setState(() {});
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors
-                                  .transparent, // Set button background color to transparent
-                            ),
-                            child: FutureBuilder(
-                              future: controller?.getCameraInfo(),
-                              builder: (context, snapshot) {
-                                if (snapshot.data != null) {
-                                  return const Icon(
-                                    IconData(0xe62b,
-                                        fontFamily: 'MaterialIcons'),
-                                    color: Colors.white,
-                                  );
-                                } else {
-                                  return const CircularProgressIndicator( color: Colors.white,);
-                                }
-                              },
-                            )),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.all(8),
+                        margin: const EdgeInsets.all(4), // Reduce margin
                         child: ElevatedButton(
                           onPressed: () async {
-                            if (isCamPaused!) {
-                              // Check if camera is not paused
-                              await controller?.resumeCamera();
-                              setState(() {
-                                isCamPaused = false;
-                              });
-                            } else {
-                              await controller?.pauseCamera();
-                              setState(() {
-                                isCamPaused = true;
-                              });
+                            if (result != null) {
+                              Navigator.pop(context, result!.code);
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors
-                                .transparent, // Set button background color to transparent
+                            padding: const EdgeInsets.all(4), // Reduce padding
+                            backgroundColor: Colors.transparent,
                           ),
-                          child: isCamPaused!
-                              ? const Icon(
-                                  Icons.pause_sharp,
-                                  color: Colors.white,
-                                )
-                              : const Icon(Icons.stop_sharp,
-                                  color: Colors.white),
+                          child: const Icon(
+                            Icons.done_sharp,
+                            size: 16,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ],
@@ -189,13 +178,10 @@ class _ScanQRCodeState extends State<ScanQRCode> {
   }
 
   Widget _buildQrView(BuildContext context) {
-    // For this example we check how width or tall the device is and change the scanArea and overlay accordingly.
     var scanArea = (MediaQuery.of(context).size.width < 400 ||
             MediaQuery.of(context).size.height < 400)
         ? 175.0
         : 325.0;
-    // To ensure the Scanner view is properly sizes after rotation
-    // we need to listen for Flutter SizeChanged notification and update controller
     return QRView(
       key: qrKey,
       onQRViewCreated: _onQRViewCreated,
@@ -216,6 +202,7 @@ class _ScanQRCodeState extends State<ScanQRCode> {
     controller.scannedDataStream.listen((scanData) {
       setState(() {
         result = scanData;
+        // Automatically close the page and return the detected QR code to the previous page
       });
     });
   }

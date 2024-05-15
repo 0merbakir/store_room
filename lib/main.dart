@@ -1,10 +1,10 @@
+
 import 'package:flutter/material.dart';
 import 'package:rolling_bottom_bar/rolling_bottom_bar.dart';
 import 'package:rolling_bottom_bar/rolling_bottom_bar_item.dart';
-
-import 'package:store_room2/pages/search_page/search_page.dart';
-import 'package:store_room2/pages/store_page/store_page.dart';
-import 'package:store_room2/pages/profile_page.dart';
+import 'package:store_room/pages/search_page/search_page.dart';
+import 'package:store_room/pages/store_page/store_page.dart';
+import 'package:store_room/pages/profile_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,16 +15,20 @@ class BottomBar extends StatelessWidget {
   BottomBar({super.key});
   final _pageController = PageController();
 
- 
- @protected
-@mustCallSuper
-void dispose() {
-  _pageController.dispose();
-}
+  @protected
+  @mustCallSuper
+  void dispose() {
+    _pageController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme:  
+      ThemeData(
+        primaryColor: Colors.blueAccent, // Setting primary color to blue
+        
+      ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: PageView(
@@ -44,8 +48,11 @@ void dispose() {
           items: const [
             RollingBottomBarItem(Icons.qr_code_scanner,
                 label: 'Tara', activeColor: Colors.blueAccent),
-            RollingBottomBarItem(Icons.store_mall_directory_rounded,
-                label: 'Depo', activeColor: Colors.blueAccent),
+            RollingBottomBarItem(
+              Icons.store_mall_directory_rounded,
+              label: 'Depo',
+              activeColor: Color.fromARGB(255, 11, 11, 125),
+            ),
             RollingBottomBarItem(Icons.person,
                 label: 'Hesap', activeColor: Colors.blueAccent),
           ],
@@ -53,7 +60,7 @@ void dispose() {
           onTap: (index) {
             _pageController.animateToPage(
               index,
-              duration: const Duration(milliseconds: 400),
+              duration: const Duration(milliseconds: 300),
               curve: Curves.easeOut,
             );
           },

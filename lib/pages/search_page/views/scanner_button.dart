@@ -10,7 +10,8 @@ class ScannerButton extends StatefulWidget {
   ScannerButtonState createState() => ScannerButtonState();
 }
 
-class ScannerButtonState extends State<ScannerButton> with TickerProviderStateMixin {
+class ScannerButtonState extends State<ScannerButton>
+    with TickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
@@ -18,7 +19,7 @@ class ScannerButtonState extends State<ScannerButton> with TickerProviderStateMi
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 750),
     );
   }
 
@@ -30,7 +31,7 @@ class ScannerButtonState extends State<ScannerButton> with TickerProviderStateMi
 
   void _onPressed() {
     _controller.forward(from: 0.0);
-    Timer(const Duration(milliseconds: 500), widget.onPressed);
+    Timer(const Duration(milliseconds: 250), widget.onPressed);
   }
 
   @override
@@ -56,6 +57,12 @@ class ScannerButtonState extends State<ScannerButton> with TickerProviderStateMi
               boxShadow: [
                 BoxShadow(
                   color: Colors.blue.withOpacity(0.5),
+                  spreadRadius: 3,
+                  blurRadius: 7,
+                  offset: const Offset(0, 3),
+                ),
+                BoxShadow(
+                  color:const  Color.fromARGB(255, 255, 255, 255).withOpacity(0.1),
                   spreadRadius: 3,
                   blurRadius: 7,
                   offset: const Offset(0, 3),

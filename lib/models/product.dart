@@ -1,24 +1,22 @@
 class Product {
-  final int id;
-  final String roomId;
+  final String id;
   final String title;
-  final int quantity;
-  final double price;
+  final int quantity;  // çıkarılacak
+  final double buyingPrice;
+  final double sellingPrice;
   final String category;
   final String code;
-  final String space;
   final String location;
   final String imageUrl;
 
   const Product({
     required this.id,
-    required this.roomId,
     required this.title,
     required this.quantity,
-    required this.price,
+    required this.buyingPrice,
+    required this.sellingPrice,
     required this.category,
     required this.code,
-    required this.space,
     required this.location,
     required this.imageUrl,
   });
@@ -27,13 +25,12 @@ class Product {
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
       id: json['id'],
-      roomId: json['roomId'],
       title: json['title'],
       quantity: json['quantity'],
-      price: json['price'],
+      buyingPrice: json['buyingPrice'],
+      sellingPrice: json['buyingPrice'],
       category: json['category'],
       code: json['code'],
-      space: json['space'],
       location: json['location'],
       imageUrl: json['imageUrl'],
     );
@@ -43,13 +40,12 @@ class Product {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'roomId': roomId,
       'title': title,
       'quantity': quantity,
-      'price': price,
+      'buyingPrice': buyingPrice,
+      'sellingPrice': sellingPrice,
       'category': category,
       'code': code,
-      'space': space,
       'location': location,
       'imageUrl': imageUrl,
     };

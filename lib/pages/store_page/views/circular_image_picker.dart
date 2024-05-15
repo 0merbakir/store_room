@@ -4,12 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CircularImagePicker extends StatefulWidget {
-  const CircularImagePicker({
-    super.key,
-    required this.onPickImage,
-  });
-
-  final void Function(File pickedImage) onPickImage;
+    final Function(File) onImagePicked;
+   CircularImagePicker({super.key, required this.onImagePicked});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -31,47 +27,91 @@ class _CircularImagePickerState extends State<CircularImagePicker> {
 
     setState(() {
       _pickedImageFile = File(pickedImage.path);
+      widget.onImagePicked(_pickedImageFile!);
     });
+  }
 
-    widget.onPickImage(_pickedImageFile!);
+  void _showImageSourceOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera),
+              title: const Text('Fotoğraf Çek'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.image_search),
+              title: const Text('Galeriden Seç'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.gallery);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        CircleAvatar(
-          radius: 45,
-          backgroundColor: Colors.grey,
-          foregroundImage:
-              _pickedImageFile != null ? FileImage(_pickedImageFile!) : null,
-        ),
-        const SizedBox(height: 10),
         Row(
-          
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(foregroundColor: Colors.white),
-              onPressed: () => _pickImage(ImageSource.camera),
-              icon: const Icon(
-                Icons.camera,
-                color: Colors.black,
-              ),
-              label: const Text('Kamera', style: TextStyle(color: Colors.black),),
+            GestureDetector(
+              onTap: () {
+                _showImageSourceOptions(context);
+              },
+              child: _pickedImageFile != null
+                  ? CircleAvatar(
+                      radius: 75,
+                      backgroundColor: Colors.grey,
+                      foregroundImage: FileImage(_pickedImageFile!),
+                    )
+                  : const CircleAvatar(
+                      radius: 75,
+                      backgroundColor: Colors.transparent,
+                      foregroundImage: AssetImage('assets/images/dragon.png'),
+                    ),
             ),
-            const SizedBox(width: 10),
-            ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(foregroundColor: Colors.white),
-              onPressed: () => _pickImage(ImageSource.gallery),
-              icon: const Icon(
-                Icons.image,
-                color: Colors.black,
+            if (_pickedImageFile == null)
+              GestureDetector(
+                onTap: () {
+                  _showImageSourceOptions(context);
+                },
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        _showImageSourceOptions(context);
+                      },
+                      icon: const Icon(
+                        Icons.add_a_photo,
+                        color:  Color.fromARGB(111, 4, 5, 81), // Set the color of the icon
+                        size: 30, // Set the size of the icon
+                      ),
+                    ),
+                    const Text(
+                      'Görsel ekle',
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Color.fromARGB(211, 4, 5, 81)), // Adjust the font size and color as needed
+                    ),
+                  ],
+                ),
               ),
-              label: const Text('Galeri', style: TextStyle(color: Colors.black),),
-            ),
           ],
         ),
+        const SizedBox(height: 10),
       ],
     );
   }
