@@ -9,14 +9,23 @@
 
 <p align="center">Store Everthing you want! </p>
 
+
+
+
      
 
 ## 👨🏻‍💻 About the project
+
+https://github.com/0merbakir/store_room/assets/100226043/aa3565b2-ccec-42cd-82a8-fb49ad0d4dc4
 
 - <p style="color: red;">A stock control mobile app made by Flutter for small bunsinesses to manage their inverntory </p>
 
 
 ## 🚀 Technologies
+
+
+
+
 
 3th-party packages that I used to develop this mobile client
 
